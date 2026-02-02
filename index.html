@@ -2,14 +2,13 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เบอร์เงินสด - ระบบจัดการเต็มรูปแบบ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>มหาเฮง 99 - ระบบจัดการ</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&display=swap');
 
         :root {
             --primary-purple: #b84cff;
-            --dark-purple: #8a2be2;
             --booked-bg: #f5f5f5;
         }
 
@@ -21,7 +20,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
             padding-bottom: 50px;
         }
 
@@ -30,12 +28,11 @@
             width: 100%;
             max-width: 800px;
             aspect-ratio: 1 / 1.25;
-            background: url('bg.jpg') no-repeat center top/contain;
-            margin-top: 10px;
+            background: #fff url('bg.jpg') no-repeat center top/contain;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* ===== ส่วนของวันที่สีแดงนูน ===== */
+        /* ===== ส่วนปุ่มวันที่ที่แก้ไขใหม่ ===== */
         .date-container {
             position: absolute;
             top: 25.5%; 
@@ -45,34 +42,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             z-index: 100;
             background: #ff4757; 
             border-radius: 10px;
             border: 2px solid #b33939;
-            box-shadow: 0 4px 0 #b33939, 0 6px 10px rgba(0,0,0,0.2);
-            transition: all 0.1s ease;
-        }
-
-        .date-container:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #b33939, 0 3px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #b33939;
+            overflow: hidden; /* ให้ Input ครอบคลุมพื้นที่ */
         }
 
         #dateDisplay {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 900;
-            color: #ffffff; 
-            pointer-events: none;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            color: #ffffff;
+            pointer-events: none; /* ให้คลิกทะลุไปหา Input ด้านล่าง */
+            position: absolute;
+            z-index: 1;
         }
 
+        /* ปรับ Input ให้โปร่งใสแต่ครอบคลุมเต็มปุ่ม เพื่อให้จิ้มตรงไหนปฏิทินก็ขึ้น */
         #lottoDate {
-            position: absolute;
-            width: 1px;
-            height: 1px;
+            width: 100%;
+            height: 100%;
             opacity: 0;
-            pointer-events: none; 
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            -webkit-appearance: none; /* สำหรับ Safari */
         }
 
         /* ===== ตารางตัวเลข ===== */
@@ -86,152 +83,53 @@
             grid-template-columns: repeat(10, 1fr);
             grid-template-rows: repeat(10, 1fr);
             gap: 4px;
-            padding: 2px;
         }
 
         .num {
             background: var(--primary-purple);
             border-radius: 8px;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
             position: relative;
             border: 2px solid #f7060666;
-            touch-action: manipulation;
-            overflow: hidden;
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
         }
 
-        .num .val {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: #000000;
-            line-height: 1;
+        .num .val { font-size: 1.6rem; font-weight: 900; }
+        .num.booked { background: var(--booked-bg) !important; box-shadow: none; }
+        .num.booked .val { opacity: 0.15; filter: blur(0.5px); }
+        .num .label { 
+            position: absolute; font-size: 10px; font-weight: 900; display: none; 
+            color: #ff0000; background: rgba(255, 255, 255, 0.9); padding: 2px 4px;
+            border-radius: 4px; transform: rotate(-15deg); border: 1px solid #ff0000;
         }
-
-        .num span.label {
-            position: absolute; 
-            font-size: 12px;
-            font-weight: 900;
-            display: none; 
-            z-index: 2;
-            color: #ff0000;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 2px 4px;
-            border-radius: 4px;
-            transform: rotate(-15deg);
-            white-space: nowrap;
-            border: 1px solid #ff0000;
-        }
-
-        .num.booked {
-            background: var(--booked-bg) !important;
-            transform: scale(0.92);
-            box-shadow: none;
-            border-color: #ffffff;
-        }
-
-        .num.booked .val {
-            opacity: 0.15;
-            filter: blur(0.5px);
-        }
-
         .num.booked .label { display: block; }
 
-        /* ===== ส่วนแอดมินด้านล่าง ===== */
+        /* แผงแอดมิน */
         .admin-section {
-            width: 95%;
-            max-width: 800px;
-            margin-top: 40px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 95%; max-width: 800px; margin-top: 30px; background: white;
+            padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
         }
-
-        .admin-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #333;
-            margin-bottom: 15px;
-            border-left: 5px solid #ff4757;
-            padding-left: 10px;
-        }
-
-        /* เพิ่มส่วนตัวกรอง */
-        .filter-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: 'Kanit';
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            border-bottom: 1px solid #eee;
-            padding: 12px 8px;
-            text-align: left;
-        }
-
-        th { background: #f8f9fa; color: #666; }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .admin-btn {
-            padding: 12px 25px;
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Kanit';
-            cursor: pointer;
-            font-weight: 700;
-        }
+        .filter-input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 10px; font-family: 'Kanit'; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #f5f5f5; text-align: left; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .admin-btn { flex: 1; padding: 15px; border: none; border-radius: 50px; font-family: 'Kanit'; font-weight: 700; color: white; cursor: pointer; }
 
         @media (max-width: 600px) {
             .num .val { font-size: 1.2rem; }
-            #dateDisplay { font-size: 0.9rem; }
-            table { font-size: 0.75rem; }
-            .filter-input { font-size: 0.8rem; }
-        }
-
-        @media print {
-            .filter-group, .btn-group, .date-container, .grid { display: none !important; }
-            .admin-section { width: 100%; box-shadow: none; margin: 0; }
+            #dateDisplay { font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <div class="date-container" onclick="openDatePicker()">
+    <div class="date-container">
         <span id="dateDisplay">เลือกงวดวันที่</span>
         <input type="date" id="lottoDate">
     </div>
@@ -239,29 +137,19 @@
 </div>
 
 <div class="admin-section">
-    <div class="admin-title">แผงควบคุมแอดมิน (สรุปรายการจอง)</div>
-    
-    <div class="filter-group">
-        <input type="text" id="filterInput" class="filter-input" placeholder="ค้นหาเบอร์, ชื่อ หรือวันที่..." onkeyup="updateAdminTable()">
-    </div>
-
+    <h2 style="margin:0;">รายการจอง</h2>
+    <input type="text" id="filterInput" class="filter-input" placeholder="🔍 ค้นหาเบอร์ หรือ ชื่อ..." onkeyup="updateAdminTable()">
     <div class="table-container">
-        <table id="adminTable">
+        <table>
             <thead>
-                <tr>
-                    <th>เบอร์</th>
-                    <th>ชื่อผู้จอง</th>
-                    <th>วันที่/เวลาที่จอง</th>
-                </tr>
+                <tr><th>เบอร์</th><th>ชื่อ</th><th>เวลา</th></tr>
             </thead>
-            <tbody id="adminTableBody">
-            </tbody>
+            <tbody id="adminTableBody"></tbody>
         </table>
     </div>
-    
     <div class="btn-group">
-        <button class="admin-btn" onclick="resetBoard()">ล้างกระดาน (เริ่มงวดใหม่)</button>
-        <button class="admin-btn" style="background:#2f3542;" onclick="window.print()">พิมพ์ใบสรุป</button>
+        <button class="admin-btn" style="background: #ff4757;" onclick="resetBoard()">ล้างงวดใหม่</button>
+        <button class="admin-btn" style="background: #2f3542;" onclick="window.print()">พิมพ์ใบสรุป</button>
     </div>
 </div>
 
@@ -270,24 +158,18 @@
     const dateInput = document.getElementById("lottoDate");
     const dateDisplay = document.getElementById("dateDisplay");
     const adminTableBody = document.getElementById("adminTableBody");
-    const filterInput = document.getElementById("filterInput");
 
-    function openDatePicker() {
-        try { dateInput.showPicker(); } catch (e) { dateInput.click(); }
-    }
-
-    // โหลดข้อมูล
     let bookedData = JSON.parse(localStorage.getItem("lotto_full_data")) || {};
-    let savedRawDate = localStorage.getItem("rawDate_final") || "";
-    let savedFormattedDate = localStorage.getItem("formattedDate_final") || "เลือกงวดวันที่";
 
-    if(savedRawDate) {
-        dateInput.value = savedRawDate;
-        dateDisplay.textContent = savedFormattedDate;
+    // โหลดวันที่เก่า (ถ้ามี)
+    if(localStorage.getItem("formattedDate_final")) {
+        dateDisplay.textContent = localStorage.getItem("formattedDate_final");
+        dateInput.value = localStorage.getItem("rawDate_final");
     }
 
-    dateInput.onchange = () => {
-        const val = dateInput.value; 
+    // แก้ไข Logic: เมื่อ Input มีการเปลี่ยนแปลง ให้เปลี่ยนข้อความบนหน้าจอทันที
+    dateInput.addEventListener('input', function() {
+        const val = this.value; 
         if (val) {
             const [y, m, d] = val.split("-");
             const thaiYear = parseInt(y) + 543;
@@ -296,78 +178,55 @@
             localStorage.setItem("rawDate_final", val);
             localStorage.setItem("formattedDate_final", formatted);
         }
-    };
+    });
 
-    // ฟังก์ชันอัปเดตตารางพร้อมระบบกรองข้อมูล
     function updateAdminTable() {
-        const keyword = filterInput.value.toLowerCase();
+        const keyword = document.getElementById("filterInput").value.toLowerCase();
         adminTableBody.innerHTML = "";
-        
-        const sortedKeys = Object.keys(bookedData).sort();
-        
-        sortedKeys.forEach(num => {
+        Object.keys(bookedData).sort().forEach(num => {
             const data = bookedData[num];
-            const name = data.name || 'ไม่ระบุชื่อ';
-            const time = data.time;
-
-            // ตรวจสอบเงื่อนไขการกรอง (เบอร์, ชื่อ, หรือเวลา)
-            if (num.includes(keyword) || name.toLowerCase().includes(keyword) || time.includes(keyword)) {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><b>${num}</b></td>
-                    <td>${name}</td>
-                    <td>${time}</td>
-                `;
-                adminTableBody.appendChild(row);
+            if (num.includes(keyword) || data.name.toLowerCase().includes(keyword)) {
+                adminTableBody.innerHTML += `<tr><td><b>${num}</b></td><td>${data.name}</td><td>${data.time}</td></tr>`;
             }
         });
     }
 
-    // สร้างปุ่มตัวเลข 00-99
     for (let i = 0; i < 100; i++) {
         const numStr = i.toString().padStart(2, "0");
         const d = document.createElement("div");
         d.className = "num";
-        d.id = `num-${numStr}`;
         d.innerHTML = `<span class="val">${numStr}</span><span class="label">จองแล้ว</span>`;
-        
         if (bookedData[numStr]) d.classList.add("booked");
         
         d.onclick = () => {
             if (!d.classList.contains("booked")) {
-                const name = prompt(`คุณต้องการจองเบอร์ ${numStr} ใช่หรือไม่?\nกรุณาใส่ชื่อผู้จอง (ไม่ใส่ก็ได้):`, "");
+                const name = prompt(`จองเบอร์ ${numStr}\nระบุชื่อผู้จอง:`, "");
                 if (name !== null) {
                     const now = new Date();
-                    const timeStr = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH');
-                    
-                    bookedData[numStr] = {
-                        name: name.trim() || "ไม่ระบุชื่อ",
-                        time: timeStr
+                    bookedData[numStr] = { 
+                        name: name.trim() || "ไม่ระบุชื่อ", 
+                        time: now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) 
                     };
                     d.classList.add("booked");
-                    localStorage.setItem("lotto_full_data", JSON.stringify(bookedData));
-                    updateAdminTable();
                 }
             } else {
-                if (confirm(`ยกเลิกการจองเบอร์ ${numStr} ใช่หรือไม่?`)) {
+                if (confirm(`ยกเลิกเบอร์ ${numStr}?`)) {
                     delete bookedData[numStr];
                     d.classList.remove("booked");
-                    localStorage.setItem("lotto_full_data", JSON.stringify(bookedData));
-                    updateAdminTable();
                 }
             }
+            localStorage.setItem("lotto_full_data", JSON.stringify(bookedData));
+            updateAdminTable();
         };
         grid.appendChild(d);
     }
 
     function resetBoard() {
-        if(confirm("คำเตือน: ข้อมูลการจอง ชื่อผู้ซื้อ และเวลาทั้งหมดจะถูกลบ!\nต้องการเริ่มงวดใหม่ใช่หรือไม่?")) {
+        if(confirm("ล้างข้อมูลทั้งหมด?")) {
             localStorage.clear();
             location.reload();
         }
     }
-
-    // เริ่มต้นแสดงผลตารางครั้งแรก
     updateAdminTable();
 </script>
 
