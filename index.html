@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="มหาเฮง 99">
-    
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     
-    <title>มหาเฮง 99 - ระบบจัดการเต็มรูปแบบ</title>
+    <title>มหาเฮง 99 - ระบบจัดการ</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&display=swap');
 
         :root {
             --primary-purple: #b84cff;
-            --dark-purple: #8a2be2;
             --booked-bg: #f5f5f5;
         }
 
@@ -28,7 +25,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
             padding-bottom: 50px;
         }
 
@@ -42,7 +38,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* ===== ส่วนวันที่แก้ไขใหม่เพื่อให้กดง่ายในมือถือ ===== */
+        /* ปุ่มวันที่ */
         .date-container {
             position: absolute;
             top: 25.5%; 
@@ -55,32 +51,24 @@
             background: #ff4757; 
             border-radius: 10px;
             border: 2px solid #b33939;
-            box-shadow: 0 4px 0 #b33939, 0 6px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #b33939;
             z-index: 100;
         }
 
         #dateDisplay {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 900;
             color: #ffffff; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-            pointer-events: none; /* ให้คลิกทะลุไปหา Input */
+            pointer-events: none;
         }
 
-        /* ซ้อน Input ไว้ข้างบนสุดแต่ทำให้โปร่งใส เพื่อให้เรียกปฏิทินได้ทุกเบราว์เซอร์ */
         #lottoDate {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 2;
-            -webkit-appearance: none;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 2;
         }
 
-        /* ===== ตารางตัวเลข ===== */
+        /* ตารางตัวเลข */
         .grid {
             position: absolute;
             top: 33.5%;
@@ -101,11 +89,9 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.1);
             position: relative;
             border: 2px solid #f7060666;
-            touch-action: manipulation;
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
         }
 
         .num .val {
@@ -114,16 +100,17 @@
             color: #000000;
         }
 
+        /* แก้ไข: ปรับขนาดคำว่า "จองแล้ว" ให้เล็กลงตามที่ต้องการ */
         .num span.label {
             position: absolute; 
-            font-size: 12px;
+            font-size: 8px; /* ปรับเล็กลงเป็น 8px */
             font-weight: 900;
             display: none; 
             z-index: 2;
             color: #ff0000;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 2px 4px;
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1px 2px; /* ลดระยะขอบด้านใน */
+            border-radius: 2px;
             transform: rotate(-15deg);
             white-space: nowrap;
             border: 1px solid #ff0000;
@@ -131,15 +118,13 @@
 
         .num.booked {
             background: var(--booked-bg) !important;
-            transform: scale(0.92);
             box-shadow: none;
-            border-color: #ffffff;
         }
 
         .num.booked .val { opacity: 0.15; filter: blur(0.5px); }
         .num.booked .label { display: block; }
 
-        /* ===== ส่วนแอดมินด้านล่าง ===== */
+        /* แผงแอดมิน */
         .admin-section {
             width: 95%;
             max-width: 800px;
@@ -151,24 +136,14 @@
             box-sizing: border-box;
         }
 
-        .admin-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: #333;
-            margin-bottom: 15px;
-            border-left: 5px solid #ff4757;
-            padding-left: 10px;
-        }
-
         .filter-input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #eee;
+            border: 1px solid #eee;
             border-radius: 10px;
             font-family: 'Kanit';
             margin-bottom: 15px;
             box-sizing: border-box;
-            outline: none;
         }
 
         .table-container { overflow-x: auto; }
@@ -185,37 +160,28 @@
             text-align: left;
         }
 
-        th { background: #f8f9fa; color: #666; }
-
         .btn-group {
             display: flex;
             gap: 10px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         .admin-btn {
-            padding: 15px 25px;
+            padding: 15px;
             background: #ff4757;
             color: white;
             border: none;
             border-radius: 50px;
             font-family: 'Kanit';
-            cursor: pointer;
             font-weight: 700;
+            cursor: pointer;
             flex: 1;
-            min-width: 140px;
         }
 
         @media (max-width: 600px) {
             .num .val { font-size: 1.2rem; }
-            #dateDisplay { font-size: 0.8rem; }
-            table { font-size: 0.75rem; }
-        }
-
-        @media print {
-            .btn-group, .date-container, .grid, .filter-input { display: none !important; }
-            .admin-section { width: 100%; box-shadow: none; margin: 0; }
+            /* บนมือถือขนาดเล็กปรับคำว่าจองแล้วให้เล็กลงอีกนิดเพื่อความชัดเจน */
+            .num span.label { font-size: 7px; } 
         }
     </style>
 </head>
@@ -230,7 +196,7 @@
 </div>
 
 <div class="admin-section">
-    <div class="admin-title">แผงควบคุมแอดมิน</div>
+    <div class="admin-title" style="font-weight: 900; font-size: 1.2rem; margin-bottom: 10px;">แผงควบคุมแอดมิน</div>
     <input type="text" id="filterInput" class="filter-input" placeholder="🔍 ค้นหาเบอร์ หรือ ชื่อ..." onkeyup="updateAdminTable()">
     
     <div class="table-container">
@@ -238,8 +204,8 @@
             <thead>
                 <tr>
                     <th>เบอร์</th>
-                    <th>ชื่อผู้จอง</th>
-                    <th>วันที่/เวลาที่จอง</th>
+                    <th>ชื่อ</th>
+                    <th>เวลา</th>
                 </tr>
             </thead>
             <tbody id="adminTableBody"></tbody>
@@ -247,8 +213,8 @@
     </div>
     
     <div class="btn-group">
-        <button class="admin-btn" onclick="resetBoard()">ล้างกระดาน (เริ่มงวดใหม่)</button>
-        <button class="admin-btn" style="background:#2f3542;" onclick="window.print()">พิมพ์ใบสรุป</button>
+        <button class="admin-btn" onclick="resetBoard()">ล้างงวดใหม่</button>
+        <button class="admin-btn" style="background:#2f3542;" onclick="window.print()">พิมพ์สรุป</button>
     </div>
 </div>
 
@@ -257,17 +223,14 @@
     const dateInput = document.getElementById("lottoDate");
     const dateDisplay = document.getElementById("dateDisplay");
     const adminTableBody = document.getElementById("adminTableBody");
-    const filterInput = document.getElementById("filterInput");
 
     let bookedData = JSON.parse(localStorage.getItem("lotto_full_data")) || {};
 
-    // จัดการการโหลดวันที่จากหน่วยความจำ
     if(localStorage.getItem("formattedDate_final")) {
         dateDisplay.textContent = localStorage.getItem("formattedDate_final");
         dateInput.value = localStorage.getItem("rawDate_final");
     }
 
-    // เมื่อเปลี่ยนวันที่
     dateInput.onchange = function() {
         const val = this.value; 
         if (val) {
@@ -281,21 +244,16 @@
     };
 
     function updateAdminTable() {
-        const keyword = filterInput.value.toLowerCase();
+        const keyword = document.getElementById("filterInput").value.toLowerCase();
         adminTableBody.innerHTML = "";
         Object.keys(bookedData).sort().forEach(num => {
             const data = bookedData[num];
             if (num.includes(keyword) || data.name.toLowerCase().includes(keyword)) {
-                adminTableBody.innerHTML += `<tr>
-                    <td><b>${num}</b></td>
-                    <td>${data.name}</td>
-                    <td>${data.time}</td>
-                </tr>`;
+                adminTableBody.innerHTML += `<tr><td><b>${num}</b></td><td>${data.name}</td><td>${data.time}</td></tr>`;
             }
         });
     }
 
-    // สร้างตาราง 00-99
     for (let i = 0; i < 100; i++) {
         const numStr = i.toString().padStart(2, "0");
         const d = document.createElement("div");
@@ -308,12 +266,14 @@
                 const name = prompt(`จองเบอร์ ${numStr}\nระบุชื่อผู้จอง:`, "");
                 if (name !== null) {
                     const now = new Date();
-                    const timeStr = now.toLocaleDateString('th-TH') + " " + now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                    bookedData[numStr] = { name: name.trim() || "ไม่ระบุชื่อ", time: timeStr };
+                    bookedData[numStr] = { 
+                        name: name.trim() || "ไม่ระบุชื่อ", 
+                        time: now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) 
+                    };
                     d.classList.add("booked");
                 }
             } else {
-                if (confirm(`ยกเลิกเบอร์ ${numStr} ใช่หรือไม่?`)) {
+                if (confirm(`ยกเลิกเบอร์ ${numStr}?`)) {
                     delete bookedData[numStr];
                     d.classList.remove("booked");
                 }
@@ -325,12 +285,11 @@
     }
 
     function resetBoard() {
-        if(confirm("คำเตือน: ข้อมูลการจองทั้งหมดจะถูกลบเพื่อเริ่มงวดใหม่?")) {
+        if(confirm("ล้างข้อมูลทั้งหมด?")) {
             localStorage.clear();
             location.reload();
         }
     }
-
     updateAdminTable();
 </script>
 
