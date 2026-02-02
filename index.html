@@ -26,8 +26,6 @@
             align-items: center;
             min-height: 100vh;
             padding-bottom: 50px;
-            /* ซ่อนหน้าเว็บไว้ก่อนเพื่อรอการตรวจสิทธิ์ */
-            display: none; 
         }
 
         .wrapper {
@@ -40,6 +38,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
+        /* แก้ไขส่วนปุ่มวันที่: ให้คลิกได้ทั้งคอมและมือถือ */
         .date-container {
             position: absolute;
             top: 25.5%; 
@@ -61,7 +60,7 @@
             font-size: 0.9rem;
             font-weight: 900;
             color: #ffffff; 
-            pointer-events: none;
+            pointer-events: none; /* ป้องกันไม่ให้ข้อความขวางการคลิก */
             position: relative;
             z-index: 1;
         }
@@ -72,12 +71,13 @@
             left: 0; 
             width: 100%; 
             height: 100%;
-            opacity: 0;
+            opacity: 0; /* ทำให้โปร่งใสแต่ยังกดได้ */
             cursor: pointer; 
-            z-index: 2;
+            z-index: 2; /* อยู่เหนือข้อความเพื่อให้รับแรงกด/คลิก */
             display: block;
         }
 
+        /* ตารางตัวเลข */
         .grid {
             position: absolute;
             top: 33.5%;
@@ -132,6 +132,7 @@
         .num.booked .val { opacity: 0.15; filter: blur(0.5px); }
         .num.booked .label { display: block; }
 
+        /* แผงแอดมิน */
         .admin-section {
             width: 95%;
             max-width: 800px;
@@ -190,17 +191,6 @@
             .num span.label { font-size: 7.5px; }
             #dateDisplay { font-size: 0.8rem; }
         }
-
-        .full-access-screen {
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #fdf2ad;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -237,38 +227,6 @@
 </div>
 
 <script>
-    // --- ส่วนที่ 1: ระบบตรวจสอบสิทธิ์พร้อมป้องกันการนับซ้ำ (Session Storage) ---
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzzbZoIuv1gRyGTGfob8Oee1ojf62WWARvgBgBwrLC6e7e0J-kyD0fLRnoSQtC_5MgH/exec";
-
-    function checkAccess() {
-        const hasVisited = sessionStorage.getItem("alreadyCounted");
-        const finalURL = hasVisited ? `${scriptURL}?mode=check` : scriptURL;
-
-        fetch(finalURL)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "full") {
-                document.body.innerHTML = `
-                    <div class="full-access-screen">
-                        <h1 style="color: #ff4757; font-size: 3rem; margin:0; font-weight:900;">ขออภัย!</h1>
-                        <h2 style="color: #2f3542; font-weight:700;">สิทธิ์การเข้าถึงเต็มแล้ว</h2>
-                        <p style="color: #747d8c; font-size:1.2rem;">ยอดสแกนงวดนี้ครบกำหนดแล้วครับ</p>
-                        <div style="font-size: 100px; margin-top:20px;">🚫</div>
-                    </div>`;
-                document.body.style.display = "flex";
-            } else {
-                sessionStorage.setItem("alreadyCounted", "true");
-                document.body.style.display = "flex";
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.body.style.display = "flex"; 
-        });
-    }
-    checkAccess();
-
-    // --- ส่วนที่ 2: ฟังก์ชันเดิมของ มหาเฮง 99 (ห้ามเอาออก) ---
     const grid = document.getElementById("grid");
     const dateInput = document.getElementById("lottoDate");
     const dateDisplay = document.getElementById("dateDisplay");
@@ -281,6 +239,7 @@
         dateInput.value = localStorage.getItem("rawDate_final");
     }
 
+    // ฟังก์ชันเปลี่ยนวันที่: ทำงานเมื่อมีการเลือกวันที่ใหม่
     dateInput.onchange = function() {
         const val = this.value; 
         if (val) {
