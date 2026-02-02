@@ -38,7 +38,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* แก้ไขส่วนปุ่มวันที่: ให้คลิกได้ทั้งคอมและมือถือ */
+        /* ปุ่มวันที่ */
         .date-container {
             position: absolute;
             top: 25.5%; 
@@ -53,28 +53,19 @@
             border: 2px solid #b33939;
             box-shadow: 0 4px 0 #b33939;
             z-index: 100;
-            cursor: pointer;
         }
 
         #dateDisplay {
             font-size: 0.9rem;
             font-weight: 900;
             color: #ffffff; 
-            pointer-events: none; /* ป้องกันไม่ให้ข้อความขวางการคลิก */
-            position: relative;
-            z-index: 1;
+            pointer-events: none;
         }
 
         #lottoDate {
             position: absolute;
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            opacity: 0; /* ทำให้โปร่งใสแต่ยังกดได้ */
-            cursor: pointer; 
-            z-index: 2; /* อยู่เหนือข้อความเพื่อให้รับแรงกด/คลิก */
-            display: block;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 2;
         }
 
         /* ตารางตัวเลข */
@@ -109,16 +100,17 @@
             color: #000000;
         }
 
+        /* แก้ไข: ปรับขนาดคำว่า "จองแล้ว" ให้เล็กลงตามที่ต้องการ */
         .num span.label {
             position: absolute; 
-            font-size: 8.5px; 
+            font-size: 8px; /* ปรับเล็กลงเป็น 8px */
             font-weight: 900;
             display: none; 
             z-index: 2;
             color: #ff0000;
             background: rgba(255, 255, 255, 0.9);
-            padding: 1px 3px;
-            border-radius: 3px;
+            padding: 1px 2px; /* ลดระยะขอบด้านใน */
+            border-radius: 2px;
             transform: rotate(-15deg);
             white-space: nowrap;
             border: 1px solid #ff0000;
@@ -188,8 +180,8 @@
 
         @media (max-width: 600px) {
             .num .val { font-size: 1.2rem; }
-            .num span.label { font-size: 7.5px; }
-            #dateDisplay { font-size: 0.8rem; }
+            /* บนมือถือขนาดเล็กปรับคำว่าจองแล้วให้เล็กลงอีกนิดเพื่อความชัดเจน */
+            .num span.label { font-size: 7px; } 
         }
     </style>
 </head>
@@ -239,7 +231,6 @@
         dateInput.value = localStorage.getItem("rawDate_final");
     }
 
-    // ฟังก์ชันเปลี่ยนวันที่: ทำงานเมื่อมีการเลือกวันที่ใหม่
     dateInput.onchange = function() {
         const val = this.value; 
         if (val) {
